@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:personal_training/dto/exercise_detail_dto.dart';
+import 'package:personal_training/pages/create_rutine_page.dart';
 
+import '../helper/sql_helper.dart';
 import '../main.dart';
 
 class NewExerciseToRoutinePage extends StatefulWidget {
@@ -13,10 +16,29 @@ class NewExerciseToRoutinePage extends StatefulWidget {
 class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
 
   final _formKey = GlobalKey<FormState>();
+  ExerciseDetailDTO exerciseDetailDTO = ExerciseDetailDTO();
+
+  void _refreshExerciseDetail() async {
+    final List<Map<String, dynamic>> data = await SqlHelper.getAllExerciseDetail();
+    print('numeros de detalles ejercicios guardads: ${data.length}');
+
+    if(data.isNotEmpty) print('Primer detalle ejercicio guardado: ${data[0]}');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshExerciseDetail();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: IconButton(
+        icon: Icon(Icons.arrow_back, size: 45, color: Colors.white),
+        onPressed: _back,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
       backgroundColor: Colors.green,
       body: Container(
         margin: EdgeInsets.only(top:50),
@@ -35,7 +57,7 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
                 child: Column(
                   children: [
                     _getAddExerciseButton(),
-                    _getTextFieldRoutineName(),
+                    _getTextFieldExerciseName(),
                     _getTextFieldSets(),
                     _getTextFieldReps(),
                     _getTextFieldMode(),
@@ -100,18 +122,18 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
     );
   }
 
-  Widget _getTextFieldRoutineName() {
+  Widget _getTextFieldExerciseName() {
     return Container(
       margin: EdgeInsets.only(top:10),
       width: 250,
       height: 60,
       child: TextFormField(
-        decoration: InputDecoration(label: Text("Nombre de rutina"),
+        decoration: InputDecoration(label: Text("Nombre de ejercicio"),
             fillColor: Colors.white,
             filled: true
         ),
         maxLength: 30,
-        //onSaved: (value) => routineDto.name = value!,
+        onSaved: (value) => exerciseDetailDTO.name = value!,
         validator: (value) => (value == null || value.isEmpty) ? "Nombre es requerido" : null,
       ),
     );
@@ -128,8 +150,8 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
             filled: true
         ),
         maxLength: 2,
-        //onSaved: (value) => routineDto.name = value!,
-        validator: (value) => (value == null || value.isEmpty) ? "Cantidad es requerida" : null,
+        onSaved: (value) => exerciseDetailDTO.sets = int.parse(value!),
+        validator: (value) => (value == null || value.isEmpty || value == '0') ? "Cantidad es requerida" : null,
       ),
     );
   }
@@ -145,8 +167,8 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
             filled: true
         ),
         maxLength: 2,
-        //onSaved: (value) => routineDto.name = value!,
-        validator: (value) => (value == null || value.isEmpty) ? "Cantidad es requerida" : null,
+        onSaved: (value) => exerciseDetailDTO.reps = int.parse(value!),
+        validator: (value) => (value == null || value.isEmpty || value == '0') ? "Cantidad es requerida" : null,
       ),
     );
   }
@@ -162,7 +184,7 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
             filled: true
         ),
         maxLength: 30,
-        //onSaved: (value) => routineDto.name = value!,
+        onSaved: (value) => exerciseDetailDTO.mode = value!,
         validator: (value) => (value == null || value.isEmpty) ? "Modo es requerida" : null,
       ),
     );
@@ -179,7 +201,7 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
             filled: true
         ),
         maxLength: 3,
-        //onSaved: (value) => routineDto.name = value!,
+        onSaved: (value) => exerciseDetailDTO.lift = int.parse(value!),
         validator: (value) => (value == null || value.isEmpty) ? "Peso es requerida" : null,
       ),
     );
@@ -196,7 +218,7 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
             filled: true
         ),
         maxLength: 2,
-        //onSaved: (value) => routineDto.name = value!,
+        onSaved: (value) => exerciseDetailDTO.repsRest = value!,
         validator: (value) => (value == null || value.isEmpty) ? "Cantidad es requerida" : null,
       ),
     );
@@ -213,15 +235,40 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
             filled: true
         ),
         maxLength: 2,
-        //onSaved: (value) => routineDto.name = value!,
+        onSaved: (value) => exerciseDetailDTO.setsRest = value!,
         validator: (value) => (value == null || value.isEmpty) ? "Cantidad es requerida" : null,
       ),
     );
   }
 
-  void _saveExercise(){
-    if(_formKey.currentState!.validate()){
+  void _saveExercise() async{
+    if(_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      int newExerciseId = await SqlHelper
+          .createExercise(
+          exerciseDetailDTO.name!,
+          exerciseDetailDTO.mode!,
+          exerciseDetailDTO.description ?? "");
+      SqlHelper
+          .createExerciseDetail(
+          exerciseDetailDTO.sets!,
+          exerciseDetailDTO.reps!,
+          exerciseDetailDTO.lift!,
+          exerciseDetailDTO.setsRest!,
+          exerciseDetailDTO.repsRest!,
+          newExerciseId
+      );
     }
+    print(exerciseDetailDTO.toString());
+  }
+
+  void _back() {
+    MyApp
+        .navigatorKey
+        .currentState?.push(
+        MaterialPageRoute(
+            builder: (_) => CreateRoutinePage()
+        )
+    );
   }
 }

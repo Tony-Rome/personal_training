@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:personal_training/pages/home_page.dart';
 
 import '../main.dart';
 import 'new_exercise_to_routine_page.dart';
@@ -18,6 +19,11 @@ class _CreateRoutinePageState extends State<CreateRoutinePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: IconButton(
+        icon: Icon(Icons.arrow_back, size: 45, color: Colors.white),
+        onPressed: _back,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
       backgroundColor: Colors.green,
       body: Container(
         margin: EdgeInsets.only(top:50),
@@ -135,6 +141,16 @@ class _CreateRoutinePageState extends State<CreateRoutinePage> {
     return Text(
         "Lista de ejercicios",
       style: TextStyle(fontSize: 20),
+    );
+  }
+
+  void _back() {
+    MyApp
+        .navigatorKey
+        .currentState?.push(
+        MaterialPageRoute(
+            builder: (_) => HomePage()
+        )
     );
   }
 }

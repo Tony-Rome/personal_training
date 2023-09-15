@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_training/dto/exercise_dto.dart';
+import 'package:personal_training/helper/sql_helper.dart';
+
+import '../main.dart';
+import 'home_page.dart';
 
 class CreateExercisePage extends StatefulWidget {
   const CreateExercisePage({Key? key}) : super(key: key);
@@ -15,9 +19,26 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
   ExerciseDTO exerciseDTO = ExerciseDTO();
   List<String> _listOfModes = ['Eliga modo','Máquina', 'Peso corporal', 'Implementos'];
 
+  void _refreshExercise() async {
+    final List<Map<String, dynamic>> data = await SqlHelper.getExercises();
+    print('numeros de ejercicios guardads: ${data.length}');
+    print('Primer ejercicio guardado: ${data[0]}');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshExercise();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: IconButton(
+        icon: Icon(Icons.arrow_back, size: 45, color: Colors.white),
+        onPressed: _back,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
       backgroundColor: Colors.green,
       body: SingleChildScrollView(
         child: Container(
@@ -137,7 +158,18 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
   void _saveExercise(){
     if(_formKey.currentState!.validate()){
       _formKey.currentState!.save();
+      SqlHelper.createExercise(exerciseDTO.name!, exerciseDTO.mode!, exerciseDTO.description!);
     }
     print(exerciseDTO.toString());
+  }
+
+  void _back() {
+    MyApp
+        .navigatorKey
+        .currentState?.push(
+        MaterialPageRoute(
+            builder: (_) => HomePage()
+        )
+    );
   }
 }
