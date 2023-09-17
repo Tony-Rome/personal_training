@@ -40,35 +40,37 @@ class _NewExerciseToRoutinePageState extends State<NewExerciseToRoutinePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
       backgroundColor: Colors.green,
-      body: Container(
-        margin: EdgeInsets.only(top:50),
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        alignment: Alignment.center,
-        child: Column(
-          children: [
-            _getTitle(),
-            _getSearchExerciseButton(),
-            Container(
-              color: Colors.grey,
-              height: 600,
-              width: double.maxFinite,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    _getAddExerciseButton(),
-                    _getTextFieldExerciseName(),
-                    _getTextFieldSets(),
-                    _getTextFieldReps(),
-                    _getTextFieldMode(),
-                    _getTextFieldLift(),
-                    _getTextFieldRestTimeReps(),
-                    _getTextFieldRestTimeSets()
-                  ],
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.only(top:50),
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          alignment: Alignment.center,
+          child: Column(
+            children: [
+              _getTitle(),
+              _getSearchExerciseButton(),
+              Container(
+                color: Colors.grey,
+                height: 600,
+                width: double.maxFinite,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _getAddExerciseButton(),
+                      _getTextFieldExerciseName(),
+                      _getTextFieldSets(),
+                      _getTextFieldReps(),
+                      _getTextFieldMode(),
+                      _getTextFieldLift(),
+                      _getTextFieldRestTimeReps(),
+                      _getTextFieldRestTimeSets()
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

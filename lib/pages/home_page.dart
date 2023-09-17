@@ -1,7 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:personal_training/dto/exercise_dto.dart';
+import 'package:personal_training/mapper/exercise_mapper.dart';
 
+import '../helper/sql_helper.dart';
 import '../main.dart';
+import '../widget/exercise_list_widget.dart';
+import '../widget/routine_list_widget.dart';
 import 'create_exercise_page.dart';
 import 'create_rutine_page.dart';
 
@@ -16,9 +21,6 @@ class _HomePageState extends State<HomePage> {
 
   int currentIndex = 0;
   List<String> types = ["Crear una rutina", "", "Crear un ejercicio"];
-
-  List<String> exercisesList = ["Biceps con mancuernas", "Abdomen con barras", "Estocadas", "Curl de biceps invertido"];
-  List<String> rutinesList = ["Solo tronco superior", "Piernas y glúteos", "Core con barras calistenia", "Bicicleta"];
 
   @override
   Widget build(BuildContext context) {
@@ -90,29 +92,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _getRutinesOrExercisesView(){
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(top:25),
-        width: double.maxFinite,
-        color: Colors.grey[200],
-        child: currentIndex == 0 ? _getListofRutines() : _getListofExercises()
-
-      ),
-    );
-  }
-
-  Widget _getListofRutines() {
-    return new ListView(
-      children: rutinesList.map((rutine) => Text(rutine)).toList(),
-    );
-  }
-
-  Widget _getListofExercises() {
-    return new ListView(
-      children: exercisesList.map((exercise) => Text(exercise)).toList(),
-    );
-  }
+  Widget _getRutinesOrExercisesView()
+        => currentIndex == 0 ? RoutineList() : ExerciseList();
 
   Widget _getBottmNavigationBar(){
     return BottomNavigationBar(
