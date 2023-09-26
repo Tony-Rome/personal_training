@@ -7,8 +7,7 @@ import '../helper/sql_helper.dart';
 import '../main.dart';
 import '../widget/exercise_list_widget.dart';
 import '../widget/routine_list_widget.dart';
-import 'create_exercise_page.dart';
-import 'create_rutine_page.dart';
+import 'routine_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,6 +20,7 @@ class _HomePageState extends State<HomePage> {
 
   int currentIndex = 0;
   List<String> types = ["Crear una rutina", "", "Crear un ejercicio"];
+  List<String> searchTypes = ["Buscar una rutina","","Buscar un ejercicio"];
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,6 @@ class _HomePageState extends State<HomePage> {
           margin: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
           child: Column(
             children: [
-              _getCreateExerciseButton(),
               _getSearchRutineOrExercise(),
               _getRutinesOrExercisesView()
             ],
@@ -40,32 +39,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _getCreateExerciseButton(){
-    return Container(
-      margin: EdgeInsets.only(top: 80),
-      alignment: Alignment.center,
-      child: ElevatedButton(
-          onPressed: _createRutineOrExercise,
-          style: ElevatedButton.styleFrom(
-              elevation: 8,
-              fixedSize: Size(300, 30)
-          ),
-          child: Text(types[currentIndex], style: TextStyle(color: Colors.black, fontSize: 15),)
-      ),
-    );
-  }
-
-  void _createRutineOrExercise() {
-    MyApp
-        .navigatorKey
-        .currentState?.push(
-        MaterialPageRoute(
-            builder: (_) => currentIndex == 0 ? CreateRoutinePage() : CreateExercisePage()
-        )
-    );
-  }
-
-  // TODO: setState para cambiar el label si es ejercicio o rutina
   Widget _getSearchRutineOrExercise(){
     return Container(
       margin: EdgeInsets.only(top: 80),
@@ -83,7 +56,7 @@ class _HomePageState extends State<HomePage> {
             borderSide: BorderSide(color: Colors.black, width: 2),
             borderRadius: BorderRadius.circular(50)
           ),
-          hintText: "Buscar un ejercicio",
+          hintText: searchTypes[currentIndex],
           filled: true,
           fillColor: Colors.white,
           focusColor: Colors.blue

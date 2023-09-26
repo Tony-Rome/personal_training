@@ -99,56 +99,14 @@ class SqlHelper {
     }
   }
 
-  static Future<int> createExerciseDetail(int sets , int reps, int lift, String setsRest, String repsRest, int exerciseId) async {
-    final db = await SqlHelper.db();
 
-    final data = {'sets': sets, 'reps': reps, 'lift': lift, 'sets_rest': setsRest, 'reps_rest': repsRest, 'exerciseId': exerciseId};
-    final id = await db.insert(
-        'exercise_detail',
-        data,
-        conflictAlgorithm: ConflictAlgorithm.replace
-    );
-    return id;
-  }
-
-  static Future<List<Map<String, dynamic>>> getAllExerciseDetail() async {
-    final db = await SqlHelper.db();
-    return db.query('exercise_detail', orderBy: 'id');
-  }
-
-  static Future<List<Map<String, dynamic>>> getExerciseDetail(int id) async {
-    final db = await SqlHelper.db();
-    return db.query('exercise_detail', where: "id = ?", whereArgs: [id], limit: 1);
-  }
-
-  static Future<int> createRoutine(String name) async {
-    final db = await SqlHelper.db();
-
-    final data = {'name': name};
-    final id = await db.insert(
-        'routine',
-        data,
-        conflictAlgorithm: ConflictAlgorithm.replace
-    );
-    return id;
-  }
-
-  static Future<List<Map<String, dynamic>>> getRoutines() async {
-    final db = await SqlHelper.db();
-    return db.query('routine', orderBy: 'id');
-  }
-
-  static Future<List<Map<String, dynamic>>> getRoutine(int id) async {
-    final db = await SqlHelper.db();
-    return db.query('routine', where: "id = ?", whereArgs: [id], limit: 1);
-  }
 
   static Future<int> createExerciseDetailRoutine(int exerciseDetailId, int routineId) async {
     final db = await SqlHelper.db();
 
     final data = {'exercise_detail_id': exerciseDetailId, 'routine_id': routineId};
     final id = await db.insert(
-        'routine',
+        'exercise_detail_routine',
         data,
         conflictAlgorithm: ConflictAlgorithm.replace
     );

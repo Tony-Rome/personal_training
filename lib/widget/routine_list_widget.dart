@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:personal_training/dto/routine_dto.dart';
+import 'package:personal_training/helper/routine_helper.dart';
 import 'package:personal_training/helper/sql_helper.dart';
 import 'package:personal_training/mapper/routine_mapper.dart';
+
+import '../main.dart';
+import '../pages/routine_detail_page.dart';
 
 class RoutineList extends StatefulWidget {
   const RoutineList({super.key});
@@ -17,7 +22,7 @@ class _RoutineListState extends State<RoutineList> {
   List<RoutineDTO> routinesList = [];
 
   void _refreshRoutines() async {
-    final List<Map<String, dynamic>> data = await SqlHelper.getRoutines();
+    final List<Map<String, dynamic>> data = await RoutineHelper.getRoutines();
     print('numeros de rutinas guardads: ${data.length}');
     if(data.isNotEmpty){
       setState(() {
@@ -33,7 +38,7 @@ class _RoutineListState extends State<RoutineList> {
 
   Future<void> _saveNewRoutineName(String text) async{
     print("Valor agregado : $text");
-    int newRoutineId = await SqlHelper.createRoutine(text);
+    int newRoutineId = await RoutineHelper.createRoutine(text);
     Map<String, dynamic> data = {
       'id': newRoutineId,
       'name': text
@@ -77,10 +82,30 @@ class _RoutineListState extends State<RoutineList> {
     return ListView.builder(
       itemCount: routinesList.length,
       itemBuilder: (_, index){
-        return ListTile(
-          leading: Text(routinesList[index].id!.toString()),
-          title: Text(routinesList[index].name!, style: TextStyle(color: Colors.black),),
-          trailing: Icon(Icons.remove_red_eye_outlined),
+        return Slidable(
+          endActionPane: ActionPane(
+            motion: const BehindMotion(),
+            children: [
+              SlidableAction(
+                backgroundColor: Colors.red,
+                  icon: Icons.delete,
+                  label: "Borrar",
+                  onPressed: (_) => _deleteRoutine(routinesList[index].id!)
+              )
+            ]
+          ),
+          child: ListTile(
+            leading: Text(routinesList[index].id!.toString()),
+            title: Text(routinesList[index].name!, style: TextStyle(color: Colors.black),),
+            trailing: Icon(Icons.remove_red_eye_outlined),
+            onTap: () => MyApp
+                .navigatorKey
+                .currentState?.push(
+                MaterialPageRoute(
+                    builder: (_) => RoutineDetailPage(routineName: routinesList[index].name!, routineId: routinesList[index].id!)
+                )
+            ),
+          ),
         );
       },
     );
@@ -159,5 +184,10 @@ class _RoutineListState extends State<RoutineList> {
         maxLength: 30,
       ),
     );
+  }
+
+  void _deleteRoutine(int routineId) async {
+    RoutineHelper.deleteRoutine(routineId)
+        .then((_) => _refreshRoutines());
   }
 }
